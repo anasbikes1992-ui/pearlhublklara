@@ -11,25 +11,36 @@ class TaxiVehicleCategory extends Model
 
     protected $fillable = [
         'name',
-        'is_active',
-        'default_seats',
+        'slug',
+        'description',
+        'icon',
         'base_fare',
         'per_km_rate',
-        'icon',
+        'per_minute_rate',
+        'max_passengers',
+        'active',
+        'sort_order',
     ];
 
     protected function casts(): array
     {
         return [
-            'is_active' => 'boolean',
-            'default_seats' => 'integer',
             'base_fare' => 'decimal:2',
             'per_km_rate' => 'decimal:2',
+            'per_minute_rate' => 'decimal:2',
+            'max_passengers' => 'integer',
+            'active' => 'boolean',
+            'sort_order' => 'integer',
         ];
     }
 
-    public function rides()
+    public function rides(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(TaxiRide::class, 'vehicle_category_id');
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('active', true)->orderBy('sort_order');
     }
 }

@@ -9,28 +9,18 @@ class TaxiChatMessage extends Model
 {
     use HasUuid;
 
-    public $timestamps = false;
-
     protected $fillable = [
         'ride_id',
         'sender_id',
-        'content',
-        'created_at',
+        'message',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'created_at' => 'datetime',
-        ];
-    }
-
-    public function ride()
+    public function ride(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(TaxiRide::class, 'ride_id');
     }
 
-    public function sender()
+    public function sender(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Profile::class, 'sender_id');
     }

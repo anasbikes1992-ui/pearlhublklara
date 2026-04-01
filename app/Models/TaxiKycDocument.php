@@ -9,32 +9,31 @@ class TaxiKycDocument extends Model
 {
     use HasUuid;
 
-    public $timestamps = false;
-
     protected $fillable = [
-        'provider_id',
-        'nic_number',
+        'driver_id',
         'license_number',
+        'license_expiry',
+        'vehicle_registration',
+        'vehicle_type',
+        'insurance_number',
+        'insurance_expiry',
         'nic_front_url',
         'nic_back_url',
         'license_front_url',
-        'license_back_url',
-        'verification_status',
-        'admin_notes',
-        'submitted_at',
-        'verified_at',
+        'status',
+        'admin_note',
     ];
 
     protected function casts(): array
     {
         return [
-            'submitted_at' => 'datetime',
-            'verified_at' => 'datetime',
+            'license_expiry' => 'date',
+            'insurance_expiry' => 'date',
         ];
     }
 
-    public function provider()
+    public function driver(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo(Profile::class, 'provider_id');
+        return $this->belongsTo(Profile::class, 'driver_id');
     }
 }

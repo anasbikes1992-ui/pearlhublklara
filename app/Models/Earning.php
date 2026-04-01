@@ -13,9 +13,8 @@ class Earning extends Model
         'provider_id',
         'booking_id',
         'amount',
-        'currency',
         'commission',
-        'net_amount',
+        'status',
     ];
 
     protected function casts(): array
@@ -23,16 +22,15 @@ class Earning extends Model
         return [
             'amount' => 'decimal:2',
             'commission' => 'decimal:2',
-            'net_amount' => 'decimal:2',
         ];
     }
 
-    public function provider()
+    public function provider(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Profile::class, 'provider_id');
     }
 
-    public function booking()
+    public function booking(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Booking::class, 'booking_id');
     }

@@ -2,26 +2,26 @@
 
 namespace App\Models;
 
+use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 
 class PlatformSetting extends Model
 {
-    public $incrementing = false;
-    protected $keyType = 'string';
-    protected $primaryKey = 'key';
-    public $timestamps = false;
+    use HasUuid;
 
     protected $fillable = [
         'key',
         'value',
-        'updated_at',
     ];
 
-    protected function casts(): array
+    public static function getValue(string $key, mixed $default = null): mixed
     {
-        return [
-            'value' => 'array',
-            'updated_at' => 'datetime',
-        ];
+        $setting = static::where('key', $key)->first();
+        return $setting ? $setting->value : $default;
+    }
+
+    public static function setValue(string $key, string $value): void
+    {
+        static::updateOrCreate(['key' => $key], ['value' => $value]);
     }
 }
