@@ -12,6 +12,9 @@ export 'services/supabase_client.dart';
 export 'services/auth_service.dart';
 export 'services/listings_service.dart';
 export 'services/taxi_service.dart';
+export 'services/chat_service.dart';
+export 'services/language_service.dart';
+export 'services/favorites_service.dart';
 
 // Widgets
 export 'widgets/pearl_hub_map.dart';

@@ -23,18 +23,61 @@ return [
     ],
 
     'anthropic' => [
-        'api_key' => env('ANTHROPIC_API_KEY'),
+        'key' => env('ANTHROPIC_API_KEY'),
     ],
 
-    'payhere' => [
-        'merchant_id' => env('PAYHERE_MERCHANT_ID'),
-        'merchant_secret' => env('PAYHERE_MERCHANT_SECRET'),
-        'sandbox' => env('PAYHERE_SANDBOX', true),
+    'xai' => [
+        'key' => env('XAI_API_KEY'),
+    ],
+
+    'webxpay' => [
+        'merchant_id' => env('WEBXPAY_MERCHANT_ID'),
+        'secret_key' => env('WEBXPAY_SECRET_KEY'),
+        'sandbox' => env('WEBXPAY_SANDBOX', true),
+    ],
+
+    'genie' => [
+        'merchant_id' => env('GENIE_MERCHANT_ID'),
+        'secret_key' => env('GENIE_SECRET_KEY'),
+        'sandbox' => env('GENIE_SANDBOX', true),
+    ],
+
+    'koko_pay' => [
+        'merchant_id' => env('KOKO_MERCHANT_ID'),
+        'secret_key' => env('KOKO_SECRET_KEY'),
+        'sandbox' => env('KOKO_SANDBOX', true),
+    ],
+
+    'mint_pay' => [
+        'merchant_id' => env('MINT_MERCHANT_ID'),
+        'secret_key' => env('MINT_SECRET_KEY'),
+        'sandbox' => env('MINT_SANDBOX', true),
+    ],
+
+    'google_translate' => [
+        'key' => env('GOOGLE_TRANSLATE_API_KEY'),
+    ],
+
+    'libretranslate' => [
+        'url' => env('LIBRETRANSLATE_URL', 'https://libretranslate.com'),
+    ],
+
+    'openai' => [
+        'key' => env('OPENAI_API_KEY'),
+    ],
+
+    'deepgram' => [
+        'key' => env('DEEPGRAM_API_KEY'),
     ],
 
     'supabase' => [
         'url' => env('SUPABASE_URL'),
         'key' => env('SUPABASE_ANON_KEY'),
         'service_key' => env('SUPABASE_SERVICE_KEY'),
+    ],
+
+    'meilisearch' => [
+        'host' => env('MEILISEARCH_HOST', 'http://localhost:7700'),
+        'key' => env('MEILISEARCH_KEY'),
     ],
 ];

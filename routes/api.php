@@ -4,15 +4,21 @@ use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AiConciergeController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BookingsController;
+use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\EventsController;
+use App\Http\Controllers\Api\FavoritesController;
+use App\Http\Controllers\Api\PaymentWebhookController;
 use App\Http\Controllers\Api\PropertiesController;
 use App\Http\Controllers\Api\ReviewsController;
+use App\Http\Controllers\Api\SalesReportController;
 use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\SmeController;
+use App\Http\Controllers\Api\SmeSubscriptionController;
 use App\Http\Controllers\Api\SocialController;
 use App\Http\Controllers\Api\StaysController;
 use App\Http\Controllers\Api\TaxiController;
 use App\Http\Controllers\Api\TaxiDriverController;
+use App\Http\Controllers\Api\TranslationController;
 use App\Http\Controllers\Api\VehiclesController;
 use App\Http\Controllers\Api\WalletController;
 use App\Models\RecentlyViewed;
@@ -23,6 +29,13 @@ use Illuminate\Support\Facades\Route;
 Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword']);
+
+// Public - Translation
+Route::get('/languages', [TranslationController::class, 'languages']);
+Route::post('/translate', [TranslationController::class, 'translate']);
+
+// Public - Payment webhooks (no auth)
+Route::post('/webhooks/payment/{driver}', [PaymentWebhookController::class, 'handle']);
 
 // Public listings
 Route::get('/stays', [StaysController::class, 'index']);
@@ -91,6 +104,18 @@ Route::middleware('auth:sanctum')->group(function () {
     // AI Concierge
     Route::post('/ai/concierge', [AiConciergeController::class, 'query']);
 
+    // Chat / Messaging
+    Route::post('/chat/send', [ChatController::class, 'send']);
+    Route::post('/chat/send-voice', [ChatController::class, 'sendVoice']);
+    Route::get('/chat/{channel}', [ChatController::class, 'conversation']);
+    Route::post('/chat/{channel}/read', [ChatController::class, 'markRead']);
+    Route::get('/chat-unread-count', [ChatController::class, 'unreadCount']);
+
+    // Favorites
+    Route::get('/favorites', [FavoritesController::class, 'index']);
+    Route::post('/favorites/toggle', [FavoritesController::class, 'toggle']);
+    Route::post('/favorites/check', [FavoritesController::class, 'check']);
+
     // Recently Viewed
     Route::get('/recently-viewed', function (Request $request) {
         return response()->json(
@@ -130,6 +155,16 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/sme/{id}/products', [SmeController::class, 'storeProduct']);
         Route::put('/sme/{businessId}/products/{productId}', [SmeController::class, 'updateProduct']);
         Route::delete('/sme/{businessId}/products/{productId}', [SmeController::class, 'deleteProduct']);
+
+        // SME Subscriptions
+        Route::post('/sme/subscription/subscribe', [SmeSubscriptionController::class, 'subscribe']);
+        Route::get('/sme/subscription/{businessId}/status', [SmeSubscriptionController::class, 'status']);
+        Route::post('/sme/subscription/{subscriptionId}/renew', [SmeSubscriptionController::class, 'renew']);
+
+        // Sales Reports
+        Route::get('/sales-reports', [SalesReportController::class, 'index']);
+        Route::post('/sales-reports', [SalesReportController::class, 'submit']);
+        Route::get('/sales-reports/{id}', [SalesReportController::class, 'show']);
     });
 
     // Admin routes

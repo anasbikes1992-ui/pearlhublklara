@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import '@/styles/globals.css';
 import { Providers } from './providers';
 import { Navbar } from '@/components/layout/navbar';
+import { AiConciergeBubble } from '@/components/ai-concierge-bubble';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -18,6 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers>
           <Navbar />
           <main className="min-h-screen">{children}</main>
+          <AiConciergeBubble />
         </Providers>
       </body>
     </html>
