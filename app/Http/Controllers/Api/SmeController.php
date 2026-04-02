@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\SmeBusiness;
 use App\Models\SmeProduct;
+use App\Services\SubscriptionService;
 use Illuminate\Http\Request;
 
 class SmeController extends Controller
 {
+    public function __construct(protected SubscriptionService $subscriptionService) {}
     public function index(Request $request)
     {
         $query = SmeBusiness::where('moderation_status', 'approved')
@@ -102,6 +104,12 @@ class SmeController extends Controller
     public function storeProduct(Request $request, string $id)
     {
         SmeBusiness::where('user_id', $request->user()->id)->findOrFail($id);
+
+        if (!$this->subscriptionService->canAddProduct($id)) {
+            return response()->json([
+                'message' => 'Product limit reached for your subscription plan. Please upgrade.',
+            ], 403);
+        }
 
         $data = $request->validate([
             'name' => 'required|string|max:255',

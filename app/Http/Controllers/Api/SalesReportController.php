@@ -33,8 +33,8 @@ class SalesReportController extends Controller
         $report = $this->commissionService->processSmeCommission(
             $request->user()->profile->id,
             $validated['business_id'],
-            (float) $validated['total_sales'],
-            $validated['month']
+            $validated['month'],
+            (float) $validated['total_sales']
         );
 
         return response()->json(['data' => $report], 201);

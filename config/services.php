@@ -32,7 +32,7 @@ return [
 
     'webxpay' => [
         'merchant_id' => env('WEBXPAY_MERCHANT_ID'),
-        'secret_key' => env('WEBXPAY_SECRET_KEY'),
+        'api_key' => env('WEBXPAY_API_KEY'),
         'sandbox' => env('WEBXPAY_SANDBOX', true),
     ],
 

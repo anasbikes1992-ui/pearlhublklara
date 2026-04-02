@@ -4,11 +4,17 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
-use App\Models\Earning;
+use App\Services\CommissionService;
+use App\Services\PaymentService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class BookingsController extends Controller
 {
+    public function __construct(
+        protected CommissionService $commissionService,
+        protected PaymentService $paymentService,
+    ) {}
     public function index(Request $request)
     {
         return response()->json(
@@ -57,10 +63,29 @@ class BookingsController extends Controller
             ->whereIn('status', ['pending', 'confirmed'])
             ->findOrFail($id);
 
-        $booking->update([
-            'status' => 'cancelled',
-            'payment_status' => $booking->payment_status === 'completed' ? 'refunded' : 'failed',
-        ]);
+        DB::transaction(function () use ($booking) {
+            $newPaymentStatus = $booking->payment_status;
+
+            if ($booking->payment_status === 'completed' && $booking->payment_method) {
+                try {
+                    $this->paymentService->driver($booking->payment_method)->refund(
+                        $booking->id,
+                        $booking->total_price
+                    );
+                    $newPaymentStatus = 'refunded';
+                } catch (\Exception $e) {
+                    report($e);
+                    $newPaymentStatus = 'refund_pending';
+                }
+            } elseif ($booking->payment_status !== 'completed') {
+                $newPaymentStatus = 'failed';
+            }
+
+            $booking->update([
+                'status' => 'cancelled',
+                'payment_status' => $newPaymentStatus,
+            ]);
+        });
 
         return response()->json(['message' => 'Booking cancelled.', 'booking' => $booking->fresh()]);
     }
@@ -83,18 +108,18 @@ class BookingsController extends Controller
             'status' => 'required|in:confirmed,cancelled,completed',
         ]);
 
-        $booking->update(['status' => $data['status']]);
+        DB::transaction(function () use ($booking, $data, $request) {
+            $booking->update(['status' => $data['status']]);
 
-        if ($data['status'] === 'completed' && $booking->payment_status === 'completed') {
-            $commission = $booking->total_price * 0.10;
-            Earning::create([
-                'provider_id' => $request->user()->id,
-                'booking_id' => $booking->id,
-                'amount' => $booking->total_price - $commission,
-                'commission' => $commission,
-                'status' => 'pending',
-            ]);
-        }
+            if ($data['status'] === 'completed' && $booking->payment_status === 'completed') {
+                $this->commissionService->processBookingCommission(
+                    $request->user()->id,
+                    $booking->id,
+                    $booking->total_price,
+                    $booking->listing_type
+                );
+            }
+        });
 
         return response()->json($booking->fresh());
     }

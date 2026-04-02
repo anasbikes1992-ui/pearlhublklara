@@ -3,14 +3,16 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Earning;
 use App\Models\TaxiDriverLocation;
 use App\Models\TaxiKycDocument;
 use App\Models\TaxiRide;
+use App\Services\CommissionService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TaxiDriverController extends Controller
 {
+    public function __construct(protected CommissionService $commissionService) {}
     public function goOnline(Request $request)
     {
         $data = $request->validate([
@@ -81,14 +83,14 @@ class TaxiDriverController extends Controller
         $ride->update(['status' => $data['status']]);
 
         if ($data['status'] === 'completed') {
-            $commission = $ride->fare * 0.15;
-            Earning::create([
-                'provider_id' => $request->user()->id,
-                'booking_id' => $ride->id,
-                'amount' => $ride->fare - $commission,
-                'commission' => $commission,
-                'status' => 'pending',
-            ]);
+            DB::transaction(function () use ($ride, $request) {
+                $this->commissionService->processBookingCommission(
+                    $request->user()->id,
+                    $ride->id,
+                    $ride->fare,
+                    'taxi'
+                );
+            });
         }
 
         return response()->json($ride->fresh());

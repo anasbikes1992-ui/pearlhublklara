@@ -8,9 +8,23 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CheckOwnership
 {
+    private const ALLOWED_MODELS = [
+        'StaysListing' => \App\Models\StaysListing::class,
+        'VehiclesListing' => \App\Models\VehiclesListing::class,
+        'EventsListing' => \App\Models\EventsListing::class,
+        'PropertiesListing' => \App\Models\PropertiesListing::class,
+        'SmeBusiness' => \App\Models\SmeBusiness::class,
+        'SmeProduct' => \App\Models\SmeProduct::class,
+        'Booking' => \App\Models\Booking::class,
+    ];
+
     public function handle(Request $request, Closure $next, string $model, string $ownerField = 'provider_id'): Response
     {
-        $modelClass = "App\\Models\\{$model}";
+        if (!isset(self::ALLOWED_MODELS[$model])) {
+            return response()->json(['message' => 'Invalid resource type'], 400);
+        }
+
+        $modelClass = self::ALLOWED_MODELS[$model];
         $routeParam = strtolower($model);
         $record = $modelClass::find($request->route($routeParam));
 

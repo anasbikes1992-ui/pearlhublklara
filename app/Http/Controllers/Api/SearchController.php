@@ -20,18 +20,23 @@ class SearchController extends Controller
 
         return response()->json([
             'stays' => StaysListing::approved()->active()
+                ->with('owner')
                 ->where('title', 'ilike', "%{$q}%")
                 ->limit($limit)->get(),
             'vehicles' => VehiclesListing::where('moderation_status', 'approved')->where('active', true)
+                ->with('owner')
                 ->where('title', 'ilike', "%{$q}%")
                 ->limit($limit)->get(),
             'events' => EventsListing::where('moderation_status', 'approved')->where('active', true)
+                ->with('owner')
                 ->where('title', 'ilike', "%{$q}%")
                 ->limit($limit)->get(),
             'properties' => PropertiesListing::where('moderation_status', 'approved')->where('active', true)
+                ->with('owner')
                 ->where('title', 'ilike', "%{$q}%")
                 ->limit($limit)->get(),
             'sme' => SmeBusiness::where('moderation_status', 'approved')->where('active', true)
+                ->with('owner')
                 ->where('business_name', 'ilike', "%{$q}%")
                 ->limit($limit)->get(),
         ]);

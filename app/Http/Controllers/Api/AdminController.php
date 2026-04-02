@@ -42,11 +42,11 @@ class AdminController extends Controller
     public function pendingListings()
     {
         return response()->json([
-            'stays' => StaysListing::pending()->with('owner')->get(),
-            'vehicles' => VehiclesListing::where('moderation_status', 'pending')->with('owner')->get(),
-            'events' => EventsListing::where('moderation_status', 'pending')->with('owner')->get(),
-            'properties' => PropertiesListing::where('moderation_status', 'pending')->with('owner')->get(),
-            'sme' => SmeBusiness::where('moderation_status', 'pending')->with('owner')->get(),
+            'stays' => StaysListing::pending()->with('owner')->limit(50)->get(),
+            'vehicles' => VehiclesListing::where('moderation_status', 'pending')->with('owner')->limit(50)->get(),
+            'events' => EventsListing::where('moderation_status', 'pending')->with('owner')->limit(50)->get(),
+            'properties' => PropertiesListing::where('moderation_status', 'pending')->with('owner')->limit(50)->get(),
+            'sme' => SmeBusiness::where('moderation_status', 'pending')->with('owner')->limit(50)->get(),
         ]);
     }
 
